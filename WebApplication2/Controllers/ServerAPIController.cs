@@ -109,7 +109,7 @@ namespace WebApplication2.Controllers
             return item;
         }
 
-        //Lấy tất cả hóa đơn
+        //3. Lấy tất cả hóa đơn
         [HttpGet]
         [Route("hoadon")]
         public List<HoaDonKH> GetHoaDon()
@@ -137,7 +137,7 @@ namespace WebApplication2.Controllers
         }
 
 
-        //Lấy hóa đơn theo ID
+        //4. Lấy hóa đơn theo ID
         [HttpGet]
         [Route("hoadon")]
         public List<HoaDonKH> GetHoaDon(int ID)
@@ -164,6 +164,29 @@ namespace WebApplication2.Controllers
 
         }
 
+        //3. Lấy tất cả hóa đơn
+        [HttpGet]
+        [Route("getsub")]
+        public List<_SubLH> GetSub()
+        {
+            try
+            {
+                var f = (from u in db.SUBLOAIHANGs
+                         select new _SubLH
+                         {
+                             ID = u.ID.ToString(),
+                             IDLH = u.IDLoaiHang.ToString(),
+                             TenLoai = u.TenLoai,
+                             Mota = u.MoTa,
+                         }).ToList();
+                return f;
+            }
+            catch (Exception e)
+            {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, false));
+            }
+
+        }
         #endregion
 
         #region --POST--
