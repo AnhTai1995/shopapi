@@ -19,7 +19,7 @@ namespace WebApplication2.Controllers
 
     public class ServerAPIController : ApiController
     {
-        private SHOPEntities1 db = new SHOPEntities1();
+        private ShopEntities1 db = new ShopEntities1();
         private ServiceDB.Service Service = new ServiceDB.Service();
 
        
