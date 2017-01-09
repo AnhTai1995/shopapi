@@ -47,27 +47,23 @@ namespace WebApplication2.Controllers
         //0. Lấy thông tin chi tiết mặt hàng theo IDMH
         [Route("getctmh")]
         [HttpGet]
-        public List<_ChiTietMH> get_CT_Theo_ID(int IDMH)
+        public List<P_SanPham> get_CT_Theo_ID(int IDMH)
         {
 
             var item = (from i in db.CHITIETMATHANGs
                         join u in db.MATHANGs on i.IDMatHang equals u.ID
                         join m in db.SUBLOAIHANGs on u.IDSubLoaiHang equals m.ID
-                        where (u.STATUS != false && i.STATUS != false && u.ID== IDMH)
-                        select new _ChiTietMH
+                        join n in db.LOAIHANGs on m.IDLoaiHang equals n.ID
+                        where (u.STATUS != false && i.STATUS != false && i.IDMatHang == IDMH)
+                        select new P_SanPham
                         {
-                           
-                            ID = i.ID,
-                            IDMatHang = u.ID,
+                            IDCT = i.ID.ToString(),
                             TenMH = u.TenMH,
-                            Gia = i.Gia.ToString(),
-                            Loai = i.Loai,
+                            Mota = i.MoTa,
                             MauSac = i.MauSac,
-                            MoTa = i.MoTa,
+                            Gia = i.Gia.ToString(),
                             Size = i.Size,
-                            SoLuong = i.SoLuong.ToString(),
-                            STATUS = i.STATUS.ToString(),
-
+                            HinhAnh = u.URLHinhAnh1,
                         }).ToList();
             return item;
         }
@@ -269,22 +265,22 @@ namespace WebApplication2.Controllers
         //3. Thêm mặt hàng và chi tiết mặt hàng cùng 1 lần
         [Route("themsanpham")]
         [HttpPost]
-        public bool postChiTietMatHang(SanPham a)
+        public bool postChiTietMatHang(TongSanPham a)
         {
             try
             {
                 MATHANG u = new MATHANG();
                 CHITIETMATHANG b = new CHITIETMATHANG();
                 u.TenMH = a.MH_TenMH;
-                u.ID = a.MH_ID;
+             // u.ID = a.MH_ID;
                 u.IDSubLoaiHang = a.MH_IDSubLoaiHang;
                 u.STATUS = a.MH_Status;
                 u.URLHinhAnh1 = a.MH_URLHinhAnh1;
                 u.URLHinhAnh2 = a.MH_URLHinhAnh2;
                 u.URLHinhAnh3 = a.MH_URLHinhAnh3;
-
-                b.ID = a.CT_ID;
-                b.IDMatHang = a.MH_ID;
+                db.MATHANGs.Add(u);
+                
+                // b.IDMatHang = a.MH_ID;
                 b.Loai = a.CT_Loai;
                 b.MauSac = a.CT_MauSac;
                 b.Gia = a.CT_Gia;
@@ -292,7 +288,7 @@ namespace WebApplication2.Controllers
                 b.SoLuong = a.CT_SoLuong;
                 b.STATUS = a.CT_Status;
 
-                db.MATHANGs.Add(u);
+                
                 db.CHITIETMATHANGs.Add(b);
                 db.SaveChanges();
                 return true;
