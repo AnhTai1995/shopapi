@@ -302,55 +302,42 @@ namespace WebApplication2.Controllers
         #endregion
 
         #region --PUT--
-        //1. Cap nhat 1 mặt hàng
+        //1. Cap nhat 1 mặt hàng và 1 chi tiêt mat hang
         [Route("capnhatMH")]
         [HttpPut]
-        public bool putMatHang(MATHANG a)
+        public bool putMatHang(SanPham a)
         {
             try
             {
-                var ct = db.MATHANGs.Where(c => c.ID.Equals(a.ID)).FirstOrDefault();
-                ct.ID = a.ID;
-                ct.TenMH = a.TenMH;
-                ct.IDSubLoaiHang = a.IDSubLoaiHang;
-                ct.STATUS = a.STATUS;
-                ct.URLHinhAnh1 = a.URLHinhAnh1;
-                ct.URLHinhAnh2 = a.URLHinhAnh2;
-                ct.URLHinhAnh3 = a.URLHinhAnh3;
+                var u = db.MATHANGs.Where(c => c.ID.Equals(a.MH_ID)).FirstOrDefault();
+                var b = db.CHITIETMATHANGs.Where(c => c.ID.Equals(a.CT_ID)).FirstOrDefault();
+
+
+                u.TenMH = a.MH_TenMH;
+                u.IDSubLoaiHang = a.MH_IDSubLoaiHang;
+                u.STATUS = a.MH_Status;
+                u.URLHinhAnh1 = a.MH_URLHinhAnh1;
+                u.URLHinhAnh2 = a.MH_URLHinhAnh2;
+                u.URLHinhAnh3 = a.MH_URLHinhAnh3;
+
+                b.IDMatHang = a.MH_ID;
+                b.Loai = a.CT_Loai;
+                b.MauSac = a.CT_MauSac;
+                b.Gia = a.CT_Gia;
+                b.Size = a.CT_Size;
+                b.SoLuong = a.CT_SoLuong;
+                b.STATUS = a.CT_Status;
+
                 db.SaveChanges();
                 return true;
             }
             catch (Exception e)
             {
-                return false;
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, false));
             }
         }
 
-        //2. Cap nhat chi tiết mặt hàng
-        [Route("capnhatCTMH")]
-        [HttpPut]
-        public bool putChiTietMatHang(CHITIETMATHANG a)
-        {
-            try
-            {
-                var ct = db.CHITIETMATHANGs.Where(c => c.ID.Equals(a.ID)).FirstOrDefault();
-                ct.ID = a.ID;
-                ct.IDMatHang = a.IDMatHang;
-                ct.MoTa = a.MoTa;
-                ct.MauSac = a.MauSac;
-                ct.Size = a.Size;
-                ct.Gia = a.Gia;
-                ct.Loai = a.Loai;
-                ct.SoLuong = a.SoLuong;
-                ct.STATUS = a.STATUS;
-                db.SaveChanges();
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
+      
 
         //3. Chỉnh sửa hóa đơn
         [HttpPut]
@@ -433,6 +420,30 @@ namespace WebApplication2.Controllers
         #endregion
 
         #region --Phước--
+
+        //0. Lấy chi tiet mat hang theo id của nó
+        [Route("getctmhtheoid")]
+        [HttpGet]
+        public List<P_SanPham> get_CTMH(int IDCTMH)
+        {
+
+            var item = (from i in db.CHITIETMATHANGs
+                        join u in db.MATHANGs on i.IDMatHang equals u.ID
+                        join m in db.SUBLOAIHANGs on u.IDSubLoaiHang equals m.ID
+                        join n in db.LOAIHANGs on m.IDLoaiHang equals n.ID
+                        where (u.STATUS != false && i.STATUS != false && i.ID == IDCTMH)
+                        select new P_SanPham
+                        {
+                            IDCT = i.ID.ToString(),
+                            TenMH = u.TenMH,
+                            Mota = i.MoTa,
+                            MauSac = i.MauSac,
+                            Gia = i.Gia.ToString(),
+                            Size = i.Size,
+                            HinhAnh = u.URLHinhAnh1,
+                        }).ToList();
+            return item;
+        }
         //1. Tất cả sản phẩm: dung api ở trên
         [Route("getmathang")]
         [HttpGet]
