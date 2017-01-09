@@ -68,7 +68,7 @@ namespace WebApplication2.Controllers
             return item;
         }
 
-        //1. Lấy thông tin tất cả sản phẩm
+        //1. Lấy thông tin tất cả sản phẩm chi tiết mặt hàng
         [Route("getsp")]
         [HttpGet]
         public List<SanPham> get_San_Pham()
@@ -108,7 +108,7 @@ namespace WebApplication2.Controllers
             }
         }
 
-        //2. Lấy thông tin sản phẩm theo ID
+        //2. Lấy thông tin sản phẩm CTMH theo ID
         [Route("getsptheoid")]
         [HttpGet]
         public List<SanPham> get_San_Pham_ID(string IDCTMH)
@@ -225,6 +225,41 @@ namespace WebApplication2.Controllers
             }
 
         }
+
+        //6. Lấy tất cả Mặt hàng và sub loại hàng
+        [Route("getmhvasub")]
+        [HttpGet]
+        public List<MH_Sub> get_MH_Sub()
+        {
+            try
+            {
+
+                var item = (from u in db.MATHANGs
+                            join m in db.SUBLOAIHANGs on u.IDSubLoaiHang equals m.ID
+                            where (u.STATUS != false)
+                            select new MH_Sub
+                            {
+                                MH_ID = u.ID,
+                                MH_TenMH = u.TenMH,
+                                MH_IDSubLoaiHang = m.ID,
+                                MH_Status = u.STATUS,
+                                MH_URLHinhAnh1 = u.URLHinhAnh1,
+                                MH_URLHinhAnh2 = u.URLHinhAnh2,
+                                MH_URLHinhAnh3 = u.URLHinhAnh3,
+
+                                S_ID = m.ID,
+                                S_IDLoaiHang = m.ID,
+                                S_MoTa = m.MoTa,
+                                S_TenLoai = m.TenLoai,
+
+                            }).ToList();
+                return item;
+            }
+            catch (Exception e)
+            {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, false));
+            }
+        }
         #endregion
 
         #region --POST--
@@ -241,7 +276,7 @@ namespace WebApplication2.Controllers
             }
             catch (Exception e)
             {
-                return false;
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, false));
             }
         }
 
@@ -258,7 +293,7 @@ namespace WebApplication2.Controllers
             }
             catch (Exception e)
             {
-                return false;
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, false));
             }
         }
 
@@ -380,7 +415,7 @@ namespace WebApplication2.Controllers
             }
             catch (Exception e)
             {
-                return false;
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, false));
             }
         }
 
