@@ -455,7 +455,31 @@ namespace WebApplication2.Controllers
         #endregion
 
         #region --Phước--
+        //001. Lấy chi tiet mat hang theo mau cua phuoc
+        [Route("getallctmh")]
+        [HttpGet]
+        public List<P_SanPham> get_all_CTMH()
+        {
 
+            var item = (from i in db.CHITIETMATHANGs
+                        join u in db.MATHANGs on i.IDMatHang equals u.ID
+                        join m in db.SUBLOAIHANGs on u.IDSubLoaiHang equals m.ID
+                        join n in db.LOAIHANGs on m.IDLoaiHang equals n.ID
+                        where (u.STATUS != false && i.STATUS != false)
+                        select new P_SanPham
+                        {
+                            IDCT = i.ID.ToString(),
+                            TenMH = u.TenMH,
+                            Mota = i.MoTa,
+                            MauSac = i.MauSac,
+                            Gia = i.Gia.ToString(),
+                            Size = i.Size,
+                            HinhAnh = u.URLHinhAnh1,
+                        }).ToList();
+            return item;
+        }
+
+       
         //0. Lấy chi tiet mat hang theo id của nó
         [Route("getctmhtheoid")]
         [HttpGet]
