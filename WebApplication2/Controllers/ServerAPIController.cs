@@ -400,7 +400,7 @@ namespace WebApplication2.Controllers
         #endregion
 
         #region --DELETE--
-        //1. Thêm 1 chi tiết mặt hàng
+        //1. Xóa 1 chi tiết mặt hàng
         [Route("xoaCTMH")]
         [HttpDelete]
         public bool deleteChiTietMatHang(int IDCTMH)
@@ -455,6 +455,8 @@ namespace WebApplication2.Controllers
         #endregion
 
         #region --Phước--
+
+        #region --GET--
         //001. Lấy chi tiet mat hang theo mau cua phuoc
         [Route("getallctmh")]
         [HttpGet]
@@ -479,7 +481,7 @@ namespace WebApplication2.Controllers
             return item;
         }
 
-       
+
         //0. Lấy chi tiet mat hang theo id của nó
         [Route("getctmhtheoid")]
         [HttpGet]
@@ -681,8 +683,51 @@ namespace WebApplication2.Controllers
                 throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, false));
             }
         }
+        #endregion
+
+        #region --POST--
+        //POST. Thêm hoa don và chi tiết hoa don cùng 1 lần
+        [Route("themhoadon")]
+        [HttpPost]
+        public bool postHoaDon(P_HoaDon a)
+        {
+            try
+            {
+                HOADON h = new HOADON();
+                CHITIETHOADON c = new CHITIETHOADON();
+
+                h.EMAIL = a.H_EMAIL;
+                h.SDT = a.H_SDT;
+                h.TongTien = a.H_TongTien;
+                h.TinhTrang = "Đã đặt hàng";
+                h.STATUS = true;
+                DateTime today = DateTime.Today;
+                h.Ngay = today;
+                db.HOADONs.Add(h);
+                db.SaveChanges();
+
+                int id = h.ID;
+
+                c.IDChiTietMatHang = a.C_IDCTMH;
+                c.IDHoaDon = id;
+                c.SoLuong = 1;
+                c.STATUS = true;
+                db.CHITIETHOADONs.Add(c);
+                db.SaveChanges();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw new HttpResponseException(Request.CreateResponse(HttpStatusCode.BadRequest, false));
+            }
+        }
+        #endregion
+
 
         #endregion
+
+
 
     }
 }

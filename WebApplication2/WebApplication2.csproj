@@ -311,6 +311,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Model1.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\P_HoaDon.cs" />
     <Compile Include="Models\P_SanPham.cs" />
     <Compile Include="Models\SanPham.cs" />
     <Compile Include="Models\SUBLOAIHANG.cs">
